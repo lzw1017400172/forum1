@@ -39,7 +39,7 @@
             <div class="control-group">
                 <label class="control-label"></label>
                 <div class="controls">
-                    <a href="foundPassword.html">忘记密码</a>
+                    <a href="/foundPassword">忘记密码</a>
                 </div>
             </div>
 

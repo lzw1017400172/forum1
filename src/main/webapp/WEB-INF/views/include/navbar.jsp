@@ -26,7 +26,7 @@
                     <li>
                         <a href="#">
                             <img src="http://oi04kst4a.bkt.clouddn.com/${sessionScope.curr_user.avatar}?imageView2/1/w/20/h/20" class="img-circle" alt="">
-                        </a>
+                        </a>                                            <%--获取头像用在session的对象--%>
                     </li>
                     <li>
                         <a href=""><i class="fa fa-plus"></i></a>
