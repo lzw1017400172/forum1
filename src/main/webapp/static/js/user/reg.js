@@ -71,7 +71,7 @@ $(function () {
                 data:$("#reg-form").serialize(),   //serialize()会返回所有的表单input的那么属性值对应value值的键值对,&连起来，属于url传值
                 success:function(data){
                     if(data.state=="success"){
-                        alert("注册成功");
+                        alert("注册成功,请去邮箱激活");
                         window.location.href = "/login";
                     } else {
                         alert(data.message);

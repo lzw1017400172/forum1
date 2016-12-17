@@ -30,8 +30,8 @@ public class LoginLogDao {
      * @param loginLog
      */
     public void LoginLogSave(LoginLog loginLog){
-        String sql = "insert into t_login_log (logintime,ip,userid) values (?,?,?);";
-        DbHelp.update(sql,loginLog.getLogintime(),loginLog.getId(),loginLog.getUserid());
+        String sql = "insert into t_login_log (ip,userid) values (?,?);";
+        DbHelp.update(sql,loginLog.getIp(),loginLog.getUserid());
     }
 
     /**

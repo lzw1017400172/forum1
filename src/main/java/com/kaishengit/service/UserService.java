@@ -2,11 +2,17 @@ package com.kaishengit.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.kaishengit.dao.LoginLogDao;
 import com.kaishengit.dao.UserDao;
+import com.kaishengit.entity.LoginLog;
 import com.kaishengit.entity.User;
+import com.kaishengit.exception.ServiceException;
 import com.kaishengit.utils.Config;
 import com.kaishengit.utils.EmailUtils;
+import com.kaishengit.utils.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +24,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class UserService {
 
+
+    private Logger logger = LoggerFactory.getLogger(UserService.class);
     //激活邮件，当点击注册时，就创键子线程去发送邮件，不用排队，给邮件有效期设置6格小时，放在服务端缓存里面，存活时间6小时
     //创建缓存,发送token凭证到缓存
     private static Cache<String,String> cache = CacheBuilder.newBuilder()
@@ -74,7 +82,7 @@ public class UserService {
                 public void run() {
                     //给用户发送邮件，邮件的html为激活地址
                     String uuid = UUID.randomUUID().toString();//这是凭证随机值token
-                    String url = "http://bbs.kaishengit.com/user/active?_="+uuid;//验证地址，传值token凭证，验证时，必须凭证对应用户username
+                    String url = "http://www.liuzhongwei.com/user/active?_="+uuid;//验证地址，传值token凭证，验证时，必须凭证对应用户username
                     //放入缓存，用来验证凭证是否对应username
                     cache.put(uuid,username);//验证时的凭证和用户名字username必须是缓存里面的对象，用uuid来获取username必须是和用户相同
                     String html = "<h3>Dear"+username+":</h3>请点击<a href='"+url+"'>该链接</a>去激活你的账号. <br> 凯盛软件";
@@ -85,5 +93,68 @@ public class UserService {
             //启动 线程
             thread.start();
         }
+
+    /**
+     * 根据token激活账户
+     * @param token
+     */
+    public void activeUser(String token){
+            //通过token查询username
+            String username = cache.getIfPresent(token);
+            if(StringUtils.isEmpty(username)){
+                logger.error("token无效或者已经过期");
+                throw new ServiceException("token无效或者已经过期");
+            } else {
+                //判断此username是否在数据库存在
+                User user = userDao.findByUserName(username);
+                if(user == null){
+                    logger.error("此用户不存在！");
+                    throw new ServiceException("此用户不存在");
+                } else {
+                    //激活update修改，将状态0改为1
+                    user.setStatus(User.ACTIVATE_STATUS);
+                    userDao.UserUpdate(user);
+                    //激活成功后删除缓存，只要走到这里就没有异常，就激活成功
+                    cache.invalidate(token);
+                }
+            }
+
+        }
+
+    /**
+     * 登录并且记录登录信息
+     * @param username
+     * @param password
+     * @param ip
+     * @return
+     */
+        public User login(String username,String password,String ip){
+            User user = userDao.findByUserName(username);
+            //password是经过加盐md5加密
+            if(user != null && DigestUtils.md5Hex(Config.getConfig("user.password.salt") + password).equals(user.getPassword())){
+                if(user.getStatus().equals(User.ACTIVATE_STATUS)){//根据状态判断是否激活或者禁用，
+
+                    //登录成功需要记录登录信息，t_login_log表,    ip,userid,userid外键对应user表id列
+                    LoginLog loginLog = new LoginLog();
+                    loginLog.setIp(ip);
+                    loginLog.setUserid(user.getId());
+
+                    LoginLogDao loginLogDao = new LoginLogDao();
+                    loginLogDao.LoginLogSave(loginLog);
+                    logger.info("{}登录了系统，IP：{}",username,ip);
+                    return user;
+                } else if(user.getStatus().equals(User.DEFAULT_STATUS)){
+                    throw new ServiceException("此帐号未激活");
+                } else {
+                    throw new ServiceException("此帐号已经被禁用");//这个错误信息，可以用ex.getMessage()获得
+                }
+
+
+            } else {
+                throw new ServiceException("帐号或者密码错误");
+            }
+
+        }
+
 
 }

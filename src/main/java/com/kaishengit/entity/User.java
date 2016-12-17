@@ -9,8 +9,13 @@ import java.sql.Timestamp;
  */
 public class User implements Serializable{
 
-    //设置默认头像七牛图片名字和默认状态0，静态常量
+    //设置默认头像七牛图片名字和静态常量
+    // 默认状态0，
+    //激活1
+    //禁用2
     public static final Integer DEFAULT_STATUS = 0;
+    public static final Integer ACTIVATE_STATUS = 1;
+    public static final Integer DISABLED_STATUS = 2;
     public static final String DEFAULT_AVATAR = "yadan";
 
     private Integer id;
