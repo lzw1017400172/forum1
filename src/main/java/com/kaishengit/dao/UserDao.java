@@ -44,6 +44,9 @@ public class UserDao {
         String sql = "select id,username,password,email,phone,status,createtime,avatar from t_user where email = ?";
         return DbHelp.query(sql,new BeanHandler<User>(User.class),email);
     }
-
+    public User findById_User(Integer id){
+        String sql = "select id,username,password,email,phone,status,createtime,avatar from t_user where id = ?";
+        return DbHelp.query(sql,new BeanHandler<User>(User.class),id);
+    }
 
 }

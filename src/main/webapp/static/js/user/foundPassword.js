@@ -34,7 +34,7 @@ $(function(){
                 type:"post",
                 data:$("#foundPassword_form").serialize(),    //获取所有表单元素的值，name作为键，value作为值，所有的
                 beforeSend:function(){//请求开始时
-                    $("#foundPassword_btn").text("登陆中...").attr("disabled","disabled");
+                    $("#foundPassword_btn").text("提交中...").attr("disabled","disabled");
                 },
                 success:function(date){
                     if(date.state == "success"){
@@ -51,7 +51,7 @@ $(function(){
                     alert("服务器异常");
                 },
                 complete:function(){
-                    $("#foundPassword_btn").text("登陆").removeAttr("disabled");
+                    $("#foundPassword_btn").text("提交").removeAttr("disabled");
                 }
             });
 

@@ -15,6 +15,6 @@ public class HomeServlet extends BaseServlet{
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        forWard("index.jsp",req,resp);
+        forWard("index.jsp",req,resp);//index.jsp
     }
 }

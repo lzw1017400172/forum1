@@ -196,4 +196,52 @@ public class UserService {
             }
         }
 
+    /**
+     * 根据token返回找回密码的用户，这个用户是和邮件对应的，给谁发邮件就修改谁的
+     * @param token
+     */
+    public User resetPasswordGetUserByToken(String token){
+        //去缓存中找token
+            String username = (String)passwordCache.getIfPresent(token);
+            if(username != null){
+                User user = userDao.findByUserName(username);
+                if(user != null){
+                    return user;
+                } else {
+                    logger.error("未找到对应账户 ");
+                    throw new ServiceException("未找到对应帐号");
+                }
+            } else {
+                logger.error("token过期或者错误");
+                throw new ServiceException("token过期或者错误");
+            }
+
+        }
+
+
+    /**
+     * 重置密码
+     * @param id 要修改账户的id
+     * @param token passwordcache缓存token，提交时是否过期
+     * @param password 新密码
+     */
+    public void resetPassword(Integer id,String token,String password){
+
+            //验证token首先
+            if(passwordCache.getIfPresent(token) == null){
+                logger.error("token过期或者错误！");
+                throw new ServiceException("token过期或者错误！");
+            } else {
+                User user = userDao.findById_User(id);
+                //修改密码前，要加密后存入数据库
+
+                user.setPassword(DigestUtils.md5Hex(Config.getConfig("user.password.salt") + password));
+                userDao.UserUpdate(user);
+                //帐号修改完毕要删除token，清除缓存
+                passwordCache.invalidate(token);
+                //记录一下，修改密码
+                logger.info("{}修改密码",user.getUsername());
+            }
+        }
+
 }
