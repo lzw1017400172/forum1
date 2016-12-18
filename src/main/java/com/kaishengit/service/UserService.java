@@ -37,6 +37,10 @@ public class UserService {
             .expireAfterAccess(30,TimeUnit.MINUTES)//缓存存活时间30分钟
             .build();
 
+    //sessionID限制请求频率缓存
+    private static Cache<String,Object> sessionIdCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(60,TimeUnit.SECONDS)  //60S发一次
+            .build();
     private UserDao userDao = new UserDao();
 
     /**
@@ -92,6 +96,7 @@ public class UserService {
                     String html = "<h3>Dear"+username+":</h3>请点击<a href='"+url+"'>该链接</a>去激活你的账号. <br> 凯盛软件";
                     //发送邮件
                     EmailUtils.sendHtmlEmail("帐号激活邮件",html,email);
+
                 }
             });
             //启动 线程
@@ -165,15 +170,16 @@ public class UserService {
      * @param type 找回密码方式email|phone
      * @param value 邮箱地址或者手机号
      */
-    public void foundPassWord(String type,String value){
-
-            if(type.equals("email")){
+    public void foundPassWord(String sessionId,String type,String value) {
+        //进来就判断sessionID过期没，时间不到不让发，下面代码就不需要了
+        if (sessionIdCache.getIfPresent(sessionId) == null) {
+            if (type.equals("email")) {
                 //根据email查找对象
                 User user = userDao.findByEmail(value);
                 //系统之外的不发送，系统之内发送
-                if(user == null){
-                    logger.error("email:{}不存在",value);
-                    throw new ServiceException("邮箱" + value +"不存在");
+                if (user == null) {
+                    logger.error("email:{}不存在", value);
+                    throw new ServiceException("邮箱" + value + "不存在");
                 } else {
                     //可以发送邮件，无论是不是自己的邮件，因为是按照谁的邮件返回修改谁的账户，所以相对安全
                     Thread thred = new Thread(new Runnable() { //发邮件要新建线程，只管提示发送成功，让邮件慢慢去发
@@ -181,20 +187,28 @@ public class UserService {
                         public void run() {
                             String token = UUID.randomUUID().toString();
                             //创建缓存，存入token和username(根据email找到的username),说明要修改的是对应邮件账户的密码
-                            passwordCache.put(token,user.getUsername());
+                            passwordCache.put(token, user.getUsername());
                             //创建验证邮件，点击url验证,传值token，点击地址进入服务端，根据token获取用户名，用户名为邮箱对应的
-                            String url = "http://www.liuzhongwei.com/foundpassword/newpassword?token="+token;
-                            String htmlMsg = user.getUsername()+"<br>请点击该<a href='"+url+"'>链接</a>进行找回密码操作，链接在30分钟内有效";
-                            EmailUtils.sendHtmlEmail("密码找回邮件",htmlMsg,value);
+                            String url = "http://www.liuzhongwei.com/foundpassword/newpassword?token=" + token;
+                            String htmlMsg = user.getUsername() + "<br>请点击该<a href='" + url + "'>链接</a>进行找回密码操作，链接在30分钟内有效";
+                            EmailUtils.sendHtmlEmail("密码找回邮件", htmlMsg, value);
+                            //发完邮件把sessionID作为键传入缓存值不重要，只要通过sessionID获取到值就行
+                            sessionIdCache.put(sessionId, "XXX");
 
                         }
                     });
                     thred.start();
                 }
-            } else if(type.equals("phone")){
+            } else if (type.equals("phone")) {
                 //根据手机号吗找回密码，先不写
             }
+        } else {
+            //sessionID还在缓存中存在，就不能发
+            logger.error("操作频率太快");
+            throw new ServiceException("操作频率太快");
         }
+
+    }
 
     /**
      * 根据token返回找回密码的用户，这个用户是和邮件对应的，给谁发邮件就修改谁的

@@ -44,14 +44,17 @@ public class FoundPasswordServlet extends BaseServlet {
         //所以这两个参数传过来是一定不会为null
         String type = req.getParameter("select_type");
         String value = req.getParameter("value");
-
+/*
         Logger logger = LoggerFactory.getLogger(FoundPasswordServlet.class);
-        logger.debug("{}+{}", type, value);
+        logger.debug("{}+{}", type, value);*/
         //判断是邮件还是手机号，以及是否存在，去service层处理
         UserService userService = new UserService();
         Map<String,Object> map = Maps.newHashMap();
+        String sessionId = req.getSession().getId();
         try {
-            userService.foundPassWord(type, value);
+            //获取到邮箱地址后去这里面发送邮件，但是发送频率需要限制，通过sessionID每次请求这里都获取一下sessionID,
+            //把sessionID存入缓存，给限制时间。并且每次都要获取一下缓存的sessionID作为键的值，为null就说明限制时间已过，不为空发送太快
+            userService.foundPassWord(sessionId,type,value);
             map.put("state","success");
         } catch (ServiceException ex){
             map.put("state","error");
