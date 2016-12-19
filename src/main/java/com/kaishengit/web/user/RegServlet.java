@@ -1,6 +1,7 @@
 package com.kaishengit.web.user;
 
 import com.google.gson.Gson;
+import com.kaishengit.exception.ServiceException;
 import com.kaishengit.service.UserService;
 import com.kaishengit.web.BaseServlet;
 
@@ -55,7 +56,7 @@ public class RegServlet extends BaseServlet{
             //走到这里没有抛出异常，就说明注册成功，返回state:success
             map.put("state","success");
             //map.put("data","");
-        } catch (Exception ex){//这里处理异常，saveUser里面所有的异常都会被处理，只要接受到就说明注册失败，返回state:error
+        } catch (ServiceException ex){//这里处理异常servlet只处理逻辑异常，不处理sql异常，saveUser里面所有的异常都会被处理，只要接受到就说明注册失败，返回state:error
             ex.printStackTrace();
             map.put("state","error");
             map.put("message","注册失败！稍后再试");//jiso模式

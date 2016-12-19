@@ -26,6 +26,7 @@
         <codec-version>1.10</codec-version>
         <email-version>1.4</email-version>
         <logback-version>1.1.2</logback-version>
+        <qiniu-version>7.2.0</qiniu-version>
         <!--<ehcache-version>2.6.11</ehcache-version>-->
     </properties>
 
@@ -68,7 +69,11 @@
           <version>${slf4j-version}</version>
         </dependency>-->
 
-
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <version>${qiniu-version}</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

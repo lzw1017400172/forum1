@@ -17,15 +17,15 @@
 <body>
 <div class="header-bar">
     <div class="container">
-        <a href="#" class="brand">
+        <a href="/home" class="brand">
             <i class="fa fa-reddit-alien"></i>
         </a>
         <ul class="unstyled inline pull-right">
             <c:choose>
                 <c:when test="${not empty sessionScope.curr_user}"><%--通过在客户端获取session来判断是否处于登录状态--%>
                     <li>
-                        <a href="#">
-                            <img src="http://oi04kst4a.bkt.clouddn.com/${sessionScope.curr_user.avatar}?imageView2/1/w/20/h/20" class="img-circle" alt="">
+                        <a href="/setting">
+                            <img id="navbar_img" src="http://oi04kst4a.bkt.clouddn.com/${sessionScope.curr_user.avatar}?imageView2/1/w/20/h/20" class="img-circle" alt="">
                         </a>                                            <%--获取头像用在session的对象--%>
                     </li>
                     <li>
@@ -35,7 +35,7 @@
                         <a href="#"><i class="fa fa-bell"></i></a>
                     </li>
                     <li>
-                        <a href="setting.html"><i class="fa fa-cog"></i></a>
+                        <a href="/setting"><i class="fa fa-cog"></i></a>
                     </li>
                     <li>
                         <a href="/logout"><i class="fa fa-sign-out"></i></a><%--退出--%>

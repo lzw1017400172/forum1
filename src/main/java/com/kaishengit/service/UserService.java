@@ -258,4 +258,32 @@ public class UserService {
             }
         }
 
+    /**
+     * 修改邮件
+     * @param email
+     * @param user
+     */
+    public void updateEmail(String email,User user) {
+        user.setEmail(email);
+        userDao.UserUpdate(user);
+    }
+
+    public void updatePassword(String oldpassword,String newpassword,User user){
+        //密码加盐了
+        oldpassword = DigestUtils.md5Hex(Config.getConfig("user.password.salt") + oldpassword);
+        if(user.getPassword().equals(oldpassword)){
+            newpassword = DigestUtils.md5Hex(Config.getConfig("user.password.salt") + newpassword);
+            user.setPassword(newpassword);
+            userDao.UserUpdate(user);
+        } else {
+            logger.error("用户{}原始密码错误",user.getUsername());
+            throw new ServiceException("原始密码错误！");
+        }
+
+    }
+
+    public void uploaderAvatar(String filekey,User user) {
+        user.setAvatar(filekey);
+        userDao.UserUpdate(user);
+    }
 }

@@ -1,12 +1,14 @@
 package com.kaishengit.web;
 
 import com.google.gson.Gson;
+import com.kaishengit.entity.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -43,5 +45,15 @@ public class BaseServlet extends HttpServlet {
         out.print(json);
         out.flush();
         out.close();
+    }
+    //很多servlet需要获取session里面的User对象的地方，所以写成一个方法
+    public User getCurrenUser(HttpServletRequest req){
+        HttpSession session = req.getSession();//session可能会找不到
+        Object currenUser = session.getAttribute("curr_user");//这个获取出来的是String可能为null，为null时不能够强转，需要判断
+        if(currenUser == null){
+            return null;
+        } else {
+            return (User)currenUser;
+        }
     }
 }

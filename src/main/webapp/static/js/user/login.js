@@ -39,7 +39,7 @@ $(function () {
                 },
                 success:function(date){//响应成功，接受值为json
                     if(date.state == "success"){//登录成功，跳转location
-                        //alert("登录成功");
+                        alert("登录成功");
                         window.location.href = "/home";
                     } else {//登录失败
                         alert("登录失败，" + date.message);
