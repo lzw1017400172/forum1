@@ -29,7 +29,7 @@
                         </a>                                            <%--获取头像用在session的对象--%>
                     </li>
                     <li>
-                        <a href=""><i class="fa fa-plus"></i></a>
+                        <a href="/newpost"><i class="fa fa-plus"></i></a>
                     </li>
                     <li>
                         <a href="#"><i class="fa fa-bell"></i></a>

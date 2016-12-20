@@ -19,9 +19,14 @@
         </div>
 
         <form action="" class="form-horizontal" id="login_form">
-            <c:if test="${not empty requestScope.message}"><%--第一次进来没有收到跳转传值，只要收到跳转传值就是安全退出--%>
+            <c:if test="${not empty requestScope.message}"><%--安全退出，第一次进来没有收到跳转传值，只要收到跳转传值就是安全退出--%>
                 <div class="alert alert-success">
                     ${requestScope.message}
+                </div>
+            </c:if>
+            <c:if test="${not empty param.redirect}"><%--过滤器登录，第一次进来没有收到跳转传值，不显示提示，收到跳转传值说明是被过滤器拦截过来的给个提示--%>
+                <div class="alert alert-success">
+                        请登录之后再继续
                 </div>
             </c:if>
             <div class="control-group">

@@ -31,6 +31,8 @@ public class LoginServlet extends BaseServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //判断当前是否有用户，处于登录状态再点到这里，就把session删了
+        req.getSession().removeAttribute("curr_user");
         forWard("/user/login.jsp",req,resp);
     }
 
