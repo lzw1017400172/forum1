@@ -19,6 +19,27 @@ public class Topic {
     private Integer userid;//外键对应用户
     private Integer nodeid;//外键对应发帖节点
 
+    //jsp会需要很多值，所以把user和node封装到topic对象，可以传一个对象就把所有制传过去，user和node对象，是其两个外键对应的，所以每个topic都会有这两个
+    //通过EL表达式链式获取
+    private User user;
+    private Node node;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
     public Integer getId() {
         return id;
     }

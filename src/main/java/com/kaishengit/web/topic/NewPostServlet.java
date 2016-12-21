@@ -38,11 +38,12 @@ public class NewPostServlet extends BaseServlet {
         //同步数据库,需要知道两个外键，通过session的userid和获取的codeid，有四个属性有默认值为0不用设置
         TopicService topicService = new TopicService();
         Integer userid = getCurrenUser(req).getId();
-        topicService.saveTopic(title,content,Integer.valueOf(nodeid),userid);
+        Integer topicid = topicService.saveTopic(title,content,Integer.valueOf(nodeid),userid);
         //service层没有异常就不用接受了
         //直接返回
         JsonResult jsonResult = new JsonResult();
         jsonResult.setState(JsonResult.SUCCESS);
+        jsonResult.setData(topicid);
         outPrintJson(jsonResult,resp);
 
     }

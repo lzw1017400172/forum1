@@ -101,7 +101,7 @@
                     success:function (json) {
                         if(json.state == "success"){
                             alert("主题已发布，请去查看");
-                            window.location.href = "/post";
+                            window.location.href = "/post?topicid=" + json.data;
                         } else {
                             alert("新增主题异常");
                         }

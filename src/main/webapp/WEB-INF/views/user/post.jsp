@@ -13,8 +13,8 @@
     <title>主题页</title>
     <link href="http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="http://cdn.bootcss.com/bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="js/editer/styles/simditor.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/js/editer/styles/simditor.css">
     <style>
         body{
             background-image: url(/static/img/bg.jpg);
@@ -31,16 +31,17 @@
     <div class="box">
         <ul class="breadcrumb" style="background-color: #fff;margin-bottom: 0px;">
             <li><a href="#">首页</a> <span class="divider">/</span></li>
-            <li class="active">问与答</li>
+            <li class="active">${requestScope.topic.node.nodename}</li>
         </ul>
         <div class="topic-head">
-            <img class="img-rounded avatar" src="http://7xp5t4.com1.z0.glb.clouddn.com/Fqb8f9uDknAt2ilBoY-ipSZRMes-?imageView2/1/w/60/h/60" alt="">
-            <h3 class="title">你们怎么发 git 的音？</h3>
-            <p class="topic-msg muted"><a href="">fankay</a> · 9小时前</p>
+            <img class="img-rounded avatar" src="http://oi04kst4a.bkt.clouddn.com/${requestScope.topic.user.avatar}?imageView2/1/w/60/h/60" alt="">
+            <h3 class="title">${requestScope.topic.title}</h3>
+            <p class="topic-msg muted"><a href="">${requestScope.topic.user.username}</a> · ${requestScope.topic.createtime}9小时前</p>
         </div>
         <div class="topic-body">
-            <p>AngularJS is an MVC framework for building web applications. The core features include HTML enhanced with custom component and data-binding capabilities, dependency injection and strong focus on simplicity, testability, maintainability and boiler-plate reduction.</p>
-            <p>下载之前先检查一下是否准备好了一个代码编辑器(我们推荐使用 Sublime Text 2) ，你是否已经掌握了足够的HTML和CSS知识以开展工作。这里我们不详述源码文件，但是它们可以随时被下载。在这里我们只着重介绍使用已经编译好的Bootstrap文件进行入门讲解。</p>
+            ${requestScope.topic.content}
+           <%-- <p>AngularJS is an MVC framework for building web applications. The core features include HTML enhanced with custom component and data-binding capabilities, dependency injection and strong focus on simplicity, testability, maintainability and boiler-plate reduction.</p>
+            <p>下载之前先检查一下是否准备好了一个代码编辑器(我们推荐使用 Sublime Text 2) ，你是否已经掌握了足够的HTML和CSS知识以开展工作。这里我们不详述源码文件，但是它们可以随时被下载。在这里我们只着重介绍使用已经编译好的Bootstrap文件进行入门讲解。</p>--%>
         </div>
         <div class="topic-toolbar">
             <ul class="unstyled inline pull-left">
@@ -172,10 +173,11 @@
 </div>
 <!--container end-->
 <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-<script src="js/editer/scripts/module.min.js"></script>
-<script src="js/editer/scripts/hotkeys.min.js"></script>
-<script src="js/editer/scripts/uploader.min.js"></script>
-<script src="js/editer/scripts/simditor.min.js"></script>
+<script src="/static/js/editer/scripts/module.min.js"></script>
+<script src="/static/js/editer/scripts/hotkeys.min.js"></script>
+<script src="/static/js/editer/scripts/uploader.min.js"></script>
+<script src="/static/js/editer/scripts/simditor.min.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
 <script>
     $(function(){
         var editor = new Simditor({
