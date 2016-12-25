@@ -1,5 +1,7 @@
 package com.kaishengit.entity;
 
+import org.joda.time.DateTime;
+
 import java.sql.Timestamp;
 
 /**
@@ -127,4 +129,18 @@ public class Topic {
     public void setNodeid(Integer nodeid) {
         this.nodeid = nodeid;
     }
+
+
+    //这里封装一个方法，以is或者get开头。判断是否可以编辑，这样服务端和客户端都可以使用。EL表达式默认调用is或get开头
+    public boolean isEdit(){
+        DateTime dateTime = new DateTime(getCreatetime());//调用本类中的方法，返回一个创建时间
+        if(dateTime.plusMinutes(50).isAfterNow() && replynum == 0){//创建时间的50分钟后在现在时间后面，就是不超过50分钟
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+
 }

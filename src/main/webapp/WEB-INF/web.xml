@@ -30,7 +30,7 @@
         <filter-class>com.kaishengit.web.filter.LoginFilter</filter-class>
         <init-param>
             <param-name>url</param-name>
-            <param-value>/setting,/newpost</param-value><!--需要过滤的servlet，都以这种形式写，(/setting,/sasa,/sasasa)-->
+            <param-value>/setting,/newpost,/topicEdit</param-value><!--需要过滤的servlet，都以这种形式写，(/setting,/sasa,/sasasa)-->
         </init-param>
     </filter>
     <filter-mapping>

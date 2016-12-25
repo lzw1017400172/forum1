@@ -17,6 +17,8 @@
     <link href="http://cdn.bootcss.com/bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/js/editer/styles/simditor.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/simditor-emoji.css" />
+
 </head>
 <body>
 <%@include file="../include/navbar.jsp"%>
@@ -51,17 +53,32 @@
 </div>
 <!--container end-->
 
-<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+<script src="/static/js/jquery-1.11.3.min.js"></script>
+<%--<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>--%>
 <script src="/static/js/editer/scripts/module.min.js"></script>
 <script src="/static/js/editer/scripts/hotkeys.min.js"></script>
 <script src="/static/js/editer/scripts/uploader.min.js"></script>
 <script src="../../../static/js/editer/scripts/simditor.min.js"></script><%--文本编辑器--%>
 <script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/simditor-emoji.js"></script>
+
 <script>
     $(function(){
         //文本编辑器
+
         var editor = new Simditor({
-            textarea: $('#editor')
+            textarea: $('#editor'),
+            toolbar:['emoji','title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', 'ol', 'ul', 'blockquote', 'code', 'table', 'link', 'image'], //表情,还可以添加其他的
+            emoji: {
+                imagePath: '/static/img/emoji/'
+                //images:['','']添加其他表情
+            },
+           upload:{//默认可以不写为false
+                url: 'http://up-z1.qiniu.com/',//可以直接跨域上传到七牛
+                params:{"token":"${requestScope.token}"},
+                fileKey:'file' //所有上传域name值属性都是file
+            }
+
             //optional options
         });
 
@@ -103,7 +120,7 @@
                             alert("主题已发布，请去查看");
                             window.location.href = "/post?topicid=" + json.data;
                         } else {
-                            alert("新增主题异常");
+                            alert(json.message);
                         }
                     },
                     error:function () {

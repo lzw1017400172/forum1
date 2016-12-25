@@ -18,10 +18,11 @@ public class Page<T> {
     //总条数
     private int totals;
     //每页显示的数据量
-    private int pageSize = 2;
+    private int pageSize = 3;
     //当前页的起始行号
     private int start;
 
+    //只要传入总条数和当前页数
     public Page(int totals,int pageNo) {
         if(pageNo < 1) {
             pageNo = 1;
@@ -34,6 +35,7 @@ public class Page<T> {
         if(totals % pageSize != 0) {
             totalPage++;
         }
+
 
         if(pageNo > totalPage) {
             pageNo = totalPage;

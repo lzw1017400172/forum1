@@ -15,12 +15,17 @@ public class NodeDao {
 
     public List<Node> findAllNode() {
 
-        String sql = "select id,nodename,topicnum from node";
+        String sql = "select id,nodename,topicnum from t_node";
         return DbHelp.query(sql,new BeanListHandler<Node>(Node.class));//是查询所有，并封装成bean对象，返回集合
     }
 
     public Node findNodeById(Integer nodeid) {
-        String sql ="select id,nodename,topicnum from node where id = ?";
+        String sql ="select id,nodename,topicnum from t_node where id = ?";
         return DbHelp.query(sql,new BeanHandler<Node>(Node.class),nodeid);
+    }
+
+    public void updateNode(Node node) {
+        String sql = "update t_node set nodename = ?,topicnum = ? where id = ?";
+        DbHelp.update(sql,node.getNodename(),node.getTopicnum(),node.getId());
     }
 }

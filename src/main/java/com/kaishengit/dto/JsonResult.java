@@ -27,10 +27,11 @@ public class JsonResult {
         this.state = ERROR;
         this.message = message;
     }
-//    public JsonResult(Object data){
-//        this.state = SUCCESS;
-//        this.data = data;
-//    }
+    //为什么Object和String不冲突，因为String是Object的子，相当于子类重写父类方法，再调用就是子类重写后方法。。参数重载，如果传参是String类型就传给重载父类的String
+    public JsonResult(Object data){
+        this.state = SUCCESS;
+        this.data = data;
+    }
 
 
 
