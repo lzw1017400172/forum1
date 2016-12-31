@@ -61,6 +61,9 @@
 <script src="../../../static/js/editer/scripts/simditor.min.js"></script><%--文本编辑器--%>
 <script src="/static/js/jquery.validate.min.js"></script>
 <script src="/static/js/simditor-emoji.js"></script>
+<c:if test="${not empty sessionScope.curr_user}"><%--引入的外部js内部不能值接似用EL表达式--%>
+    <script src="/static/js/user/notify.js"></script>
+</c:if>
 
 <script>
     $(function(){

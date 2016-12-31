@@ -6,6 +6,7 @@ import com.kaishengit.entity.User;
 import com.kaishengit.utils.Config;
 import com.kaishengit.utils.DbHelp;
 import com.kaishengit.utils.Page;
+import com.kaishengit.vo.HomeShowVo;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.handlers.AbstractListHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
@@ -103,5 +104,42 @@ public class TopicDao {
     public Thank finThankByUsericIdAndTopicId(Integer userid, Integer topicid) {
         String sql = "select * from t_thankyou where userid = ? and topicid = ?";
         return DbHelp.query(sql,new BeanHandler<Thank>(Thank.class),userid,topicid);
+    }
+
+    /**
+     * 删除主题
+     * @param topicid
+     */
+    public void delete(Integer topicid) {
+        String sql = "delete from t_topic where id = ?";
+        DbHelp.update(sql,topicid);
+    }
+
+    /**
+     * 查询topic发布的天数
+     */
+    public int countTopicByDay() {//每一个派生出来的表或者列都要有别名。先分组查出日期表。(派生表as别名)。在查派生的表的count(*)
+        String sql = "select count(*) from (select count(*) from t_topic group by date_format(createtime,'%y-%m-%d'))as topicCount";
+        return DbHelp.query(sql,new ScalarHandler<Long>()).intValue();
+    }
+
+    /**
+     * 查询有回复的天数
+     * @return
+     */
+    public int countReplyByDay(){
+        String sql = "select count(*) from (select count(*) from t_reply group by date_format(createtime,'%y-%m-%d'))as replyCount";
+        return DbHelp.query(sql,new ScalarHandler<Long>()).intValue();
+    }
+    /**
+     * 分页查询，按照日期查topic派生一个表，按照日期查reply派生一个表，两表全连接。就不会漏掉内容。比如发帖天数少于回复天数。并且分页的totals是进行比较最大的
+     * @param page
+     */
+    public List<HomeShowVo> findTopicNumAndReplyNum(Page page) {
+        String sql = "select * from (select date_format(createtime,'%y-%m-%d') as topictime,count(*) as topicnum from t_topic group by topictime \n" +
+                ") as tn , (select date_format(createtime,'%y-%m-%d') as replytime,count(*) as replynum from t_reply group by replytime \n" +
+                ") as tr where tn.topictime = tr.replytime order by topictime desc limit ?,?";
+        return DbHelp.query(sql,new BeanListHandler<HomeShowVo>(HomeShowVo.class),page.getStart(),page.getPageSize());
+
     }
 }

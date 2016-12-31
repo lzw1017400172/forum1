@@ -1,22 +1,29 @@
 package com.kaishengit.service;
 
+import com.google.common.base.Predicate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.kaishengit.dao.LoginLogDao;
+import com.kaishengit.dao.NotifyDao;
 import com.kaishengit.dao.UserDao;
 import com.kaishengit.entity.LoginLog;
+import com.kaishengit.entity.Node;
+import com.kaishengit.entity.Notify;
 import com.kaishengit.entity.User;
 import com.kaishengit.exception.ServiceException;
 import com.kaishengit.utils.Config;
 import com.kaishengit.utils.EmailUtils;
+import com.kaishengit.utils.Page;
 import com.kaishengit.utils.StringUtils;
+import com.kaishengit.vo.UserVo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class UserService {
 
+    private NotifyDao notifyDao = new NotifyDao();
 
     private Logger logger = LoggerFactory.getLogger(UserService.class);
     //激活邮件，当点击注册时，就创键子线程去发送邮件，不用排队，给邮件有效期设置6格小时，放在服务端缓存里面，存活时间6小时
@@ -285,5 +293,103 @@ public class UserService {
     public void uploaderAvatar(String filekey,User user) {
         user.setAvatar(filekey);
         userDao.UserUpdate(user);
+    }
+
+    /**
+     * 根据userid查询当前用户的所有通知
+     * @param userid
+     * @return
+     */
+    public List<Notify> findNotifyByUserIdService(Integer userid) {
+        return notifyDao.findNotifyByUserId(userid);
+    }
+
+    /**
+     * 查询未读通知state=0的个数，当然是对于当前登录的用户userid来说
+     */
+    public List<Notify> findUnReadNotifyService(Integer userid) {
+        //方法1直接数据库查，两个条件
+        //List<Notify> notifyList = notifyDao.findUnreadNotify(userid,Notify.NOTIFY_UNREAD);
+        //方法2用过滤google的guavar框架先查一个条件，把另一个条件过滤了
+        List<Notify> notifyList = notifyDao.findNotifyByUserId(userid);
+        //用guavar框架过滤已读的，剩下未读的
+        Collection<Notify> collection = Collections2.filter(notifyList, new Predicate<Notify>() {//第一个参数过滤的集合，第二个匿名局部内部类，断言过滤规则。。注意此方法返回的是一个collection集合接口对象
+            @Override
+            public boolean apply(Notify notify) {
+                return notify.getState() == Notify.NOTIFY_UNREAD;//未读的通过
+            }
+        });
+        //collection需要转换成List集合，向下转型强转,可用lIsts.newArrayList()强转
+        notifyList = Lists.newArrayList(collection);
+        return notifyList;
+    }
+
+    /**
+     * 将未读变成已读
+     * @param notifyids 所有选定变成已读的notify的id数组
+     */
+    public void updateNotifyStateById(String[] notifyids) {
+
+        for(int i = 0;i < notifyids.length;i++){
+
+            Notify notify = notifyDao.findNotifyById(Integer.valueOf(notifyids[i]));
+            if(notify != null){
+                notify.setState(Notify.NOTIFY_READ);
+                notify.setReadtime(new Timestamp(new Date().getTime()));//加上读通知时间，为现在时间
+                //修改到数据库
+                notifyDao.updateNotify(notify);
+
+            } else {
+                throw new ServiceException("该通知不存在或者已经被删除");
+            }
+        }
+
+
+    }
+
+    /**
+     * 根当前页面查询分页查询
+     * @param pageNo
+     * @return
+     */
+    public Page findUserAndLoginLogPage(int pageNo) {
+        //所有与用户数量
+        int totals = userDao.findUserCount();
+        Page page = new Page(totals,pageNo);
+        //两表加分页查询
+        List<UserVo> userList = userDao.findUserAndLoginLog(page);
+        //结果中过滤掉未激活status=0的用guavar框架过滤集合
+        Collection collection =  Collections2.filter(userList, new Predicate<UserVo>() {
+            @Override
+            public boolean apply(UserVo userVo) {
+                return userVo.getStatus() != 0;
+            }
+        });
+        //转成List向下转型
+        userList = Lists.newArrayList(collection);
+        page.setItems(userList);
+        return page;
+    }
+
+    /**
+     * 修改用户状态
+     * @param userid
+     * @param state
+     */
+    public void updateState(Integer userid, String state) {
+        User user = userDao.findById_User(userid);
+        if(user != null){
+            if("禁用".equals(state)){
+                //变为2
+                user.setStatus(2);
+            } else if("恢复".equals(state)){
+                //变为1
+                user.setStatus(1);
+            }
+            userDao.UserUpdate(user);
+        } else {
+            throw new ServiceException("该用户不存在或者已经被删除");
+        }
+
     }
 }

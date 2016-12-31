@@ -27,6 +27,40 @@ public class User implements Serializable{
     private Timestamp createtime; //创建账户的时间
     private String avatar;   //头像，记录的是上传到犀牛的图片七牛返回来的key(文件名七牛内部)值，经过base64加密
 
+    private LoginLog loginLog;
+
+    public LoginLog getLoginLog() {
+        return loginLog;
+    }
+
+    public void setLoginLog(LoginLog loginLog) {
+        this.loginLog = loginLog;
+    }
+
+
+    //user表和loginlog表联查的属性
+   /* private String logintime;
+    private String ip;
+
+    public String getLogintime() {
+        return logintime;
+    }
+
+    public void setLogintime(String logintime) {
+        this.logintime = logintime;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }*/
+
+
+
+
     public Integer getId() {
         return id;
     }

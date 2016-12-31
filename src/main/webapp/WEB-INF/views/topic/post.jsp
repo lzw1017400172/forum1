@@ -143,6 +143,9 @@
 <script src="/static/js/jquery.validate.min.js"></script>
 <script src="//cdn.bootcss.com/moment.js/2.10.6/moment.min.js"></script>
 <script src="//cdn.bootcss.com/moment.js/2.10.6/locale/zh-cn.js"></script>
+<c:if test="${not empty sessionScope.curr_user}"><%--引入的外部js内部不能值接似用EL表达式--%>
+    <script src="/static/js/user/notify.js"></script>
+</c:if>
 
 <script>
     $(function(){

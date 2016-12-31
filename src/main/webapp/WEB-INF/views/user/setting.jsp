@@ -114,6 +114,9 @@
 <script src="../../../static/js/jquery.validate.min.js"></script>
 <script src="../../../static/js/webuploader-0.1.5/webuploader.min.js"></script>
 <script src="../../../static/js/user/setting.js"></script>
+<c:if test="${not empty sessionScope.curr_user}"><%--引入的外部js内部不能值接似用EL表达式--%>
+    <script src="/static/js/user/notify.js"></script>
+</c:if>
 
 <%--将文件上传到七牛是需要凭证的token，但是获取凭证必须用EL表达式，EL表达式不能在外部js写，所以必须写这里--%>
 <script>
@@ -146,7 +149,7 @@
                     }
                 })
                 .error(function () {
-                    alert(服务器异常);
+                    alert("服务器异常");
                 });
     });
 

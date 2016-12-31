@@ -24,13 +24,20 @@ public class TopicService {
     private ReplyDao replyDao = new ReplyDao();
     private FavDao favDao = new FavDao();
     private ThankDao thankDao = new ThankDao();
+    private NotifyDao notifyDao = new NotifyDao();
     Logger logger = LoggerFactory.getLogger(TopicService.class);
 
+    public List<Node> findAllNodeService(){
+        return nodeDao.findAllNode();
+    }
     /**
      * 查找所有节点
      */
-    public List<Node> findAllNodeService() {
-        return nodeDao.findAllNode();
+    public Page findAllNodeByPage(int pageNo) {
+        int totals = nodeDao.findNodeCount();
+        Page page = new Page(totals,pageNo);
+        page.setItems(nodeDao.findNodeByPage(page));
+        return page;
     }
 
     /**
@@ -91,7 +98,7 @@ public class TopicService {
 
     }
     /**
-     *   添加回复，并且更新topic最后一次回复时间，replynum
+     *   添加回复，并且更新topic最后一次回复时间，replynum..并且添加通知
      */
 
     public void saveTopicReply(String content, String topicid, User user) {
@@ -108,6 +115,14 @@ public class TopicService {
                     topic.setReplynum(topic.getReplynum()+1);
                     topic.setLastreplytime(new Timestamp(new Date().getTime()));//就用现在的时间就行，不必去数据库查发帖时间
                     topicDao.updateTopic(topic);
+                    //添加一条通知,当回复自己的帖子时是不需要通知的。回复人user.getId()==Topic.getUserid()
+                    if(user.getId() != topic.getUserid()){
+                        Notify notify = new Notify();
+                        notify.setUserid(topic.getUserid());//回复谁通知谁
+                        notify.setContent("您的主题<a href=\"/post?topicid=" + topic.getId() + "\">" + topic.getTitle() + "</a>有新的回复");
+                        notify.setState(Notify.NOTIFY_UNREAD);
+                        notifyDao.saveNotify(notify);
+                    }
                 } else {
                     throw new ServiceException("主题不存在或已经被删除");
                 }
@@ -164,6 +179,34 @@ public class TopicService {
         } else {
             throw  new ServiceException("参数错误");
         }
+
+    }
+
+    /**
+     * 修改主题节点
+     * @param topicid
+     * @param newnodeid
+     */
+    public void updateTopicNode(Integer topicid,Integer newnodeid){
+
+        Topic topic = topicDao.findTopicId(topicid);
+        if(topic != null){
+            if(topic.getNodeid() != newnodeid){
+                Node oldNode = nodeDao.findNodeById(topic.getNodeid());//原来的
+                Node newNode = nodeDao.findNodeById(newnodeid);//修改后新的
+                oldNode.setTopicnum(oldNode.getTopicnum() - 1);
+                newNode.setTopicnum(newNode.getTopicnum() + 1);
+                nodeDao.updateNode(oldNode);
+                nodeDao.updateNode(newNode);
+            }
+
+            topic.setNodeid(newnodeid);
+            topicDao.updateTopic(topic);
+
+        } else {
+            throw  new ServiceException("帖子不存在或者已经被删除");
+        }
+
 
     }
 
@@ -282,5 +325,38 @@ public class TopicService {
         }
         //最后都查一下topic表的thankyounum，再返回到jsp更加准确
         return topicDao.findTopicId(topic.getId());
+    }
+
+    /**
+     * 删除topic，根据topicid
+     * @param topicid
+     */
+    public void deleteTopic(Integer topicid) {
+        //应该首先删除帖子下面的回复，不管有没有都删，因为是外键约束不删回复就报错
+        replyDao.deleReplyByTopicId(topicid);
+        Topic topic = topicDao.findTopicId(topicid);
+        if(topic != null){
+            topicDao.delete(topicid);
+            //需要更新node节点下面的主体数量topicnum
+            Node node = nodeDao.findNodeById(topic.getNodeid());
+            node.setTopicnum(node.getTopicnum() - 1);
+            nodeDao.updateNode(node);
+        } else {
+            throw new ServiceException("没有找到此主题");
+        }
+    }
+
+    /**
+     * 分页查询每天的发帖数，回复数
+     * @param pageNo
+     */
+    public Page findTopicNumAndReplyNum(int pageNo) {
+        //按照天数分页，但是不确定按照哪个天数分页。回复的天数和发帖的天数哪个多肯定是按照哪个分页。所以比较两个
+        int totals = topicDao.countTopicByDay();// > topicDao.countReplyByDay() ? topicDao.countTopicByDay() : topicDao.countReplyByDay();
+        Page page = new Page(totals,pageNo);
+
+        //按照日期查topic派生一个表，按照日期查reply派生一个表，两表全连接（连接后表的行数与最多的一致），并且分页按照天数多的就有多少数据分页
+         page.setItems(topicDao.findTopicNumAndReplyNum(page));
+        return page;
     }
 }

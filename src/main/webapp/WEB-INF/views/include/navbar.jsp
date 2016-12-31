@@ -32,7 +32,7 @@
                         <a href="/newpost"><i class="fa fa-plus"></i></a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-bell"></i></a>
+                        <a href="/notify" id="loadnotify" rel="${ not empty sessionScope.curr_user}"><i class="fa fa-bell"></i><span id="unreadnum" class="badge"></span></a><%--未读消息个数同步到这里，因为是异步请求不刷新页面，所以这不能用EL表达式获取，传回来的值也是json，所以用js使这里改变--%>
                     </li>
                     <li>
                         <a href="/setting"><i class="fa fa-cog"></i></a>

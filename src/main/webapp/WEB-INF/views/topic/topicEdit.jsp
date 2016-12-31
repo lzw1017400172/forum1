@@ -59,6 +59,9 @@
 
 <script src="/static/js/simditor-emoji.js"></script><%--表情js--%>
 <script src="/static/js/jquery.validate.min.js"></script>
+<c:if test="${not empty sessionScope.curr_user}"><%--通知js轮询请求，不登陆不发--%>
+<script src="/static/js/user/notify.js"></script>
+</c:if>
 <script>
 
     $(function () {

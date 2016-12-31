@@ -49,4 +49,13 @@ public class ReplyDao {
         },topicid);
 
     }
+
+    /**
+     * 根据主题id删除回复，廷尉和topic是外键约束，需要先删除reply
+     * @param topicid
+     */
+    public void deleReplyByTopicId(Integer topicid) {
+        String sql = "delete from t_reply where topicid = ?";
+        DbHelp.update(sql,topicid);
+    }
 }
