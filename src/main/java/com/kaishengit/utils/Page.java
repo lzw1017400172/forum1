@@ -18,7 +18,7 @@ public class Page<T> {
     //总条数
     private int totals;
     //每页显示的数据量
-    private int pageSize = 3;
+    private int pageSize = 5;
     //当前页的起始行号
     private int start;
 
