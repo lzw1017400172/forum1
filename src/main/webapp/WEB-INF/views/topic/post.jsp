@@ -33,7 +33,7 @@
 <div class="container">
     <div class="box">
         <ul class="breadcrumb" style="background-color: #fff;margin-bottom: 0px;">
-            <li><a href="#">首页</a> <span class="divider">/</span></li>
+            <li><a href="/home">首页</a> <span class="divider">/</span></li>
             <li class="active">${requestScope.topic.node.nodename}</li>
         </ul>
         <div class="topic-head">
