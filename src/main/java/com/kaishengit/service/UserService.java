@@ -98,7 +98,7 @@ public class UserService {
                 public void run() {
                     //给用户发送邮件，邮件的html为激活地址
                     String uuid = UUID.randomUUID().toString();//这是凭证随机值token
-                    String url = "http://www.liuzhongwei.com/user/active?_="+uuid;//验证地址，传值token凭证，验证时，必须凭证对应用户username
+                    String url = Config.getConfig("al.ip") + "user/active?_="+uuid;//验证地址，传值token凭证，验证时，必须凭证对应用户username
                     //放入缓存，用来验证凭证是否对应username
                     cache.put(uuid,username);//验证时的凭证和用户名字username必须是缓存里面的对象，用uuid来获取username必须是和用户相同
                     String html = "<h3>Dear"+username+":</h3>请点击<a href='"+url+"'>该链接</a>去激活你的账号. <br> 凯盛软件";
@@ -197,7 +197,7 @@ public class UserService {
                             //创建缓存，存入token和username(根据email找到的username),说明要修改的是对应邮件账户的密码
                             passwordCache.put(token, user.getUsername());
                             //创建验证邮件，点击url验证,传值token，点击地址进入服务端，根据token获取用户名，用户名为邮箱对应的
-                            String url = "http://www.liuzhongwei.com/foundpassword/newpassword?token=" + token;
+                            String url = Config.getConfig("al.ip") + "foundpassword/newpassword?token=" + token;
                             String htmlMsg = user.getUsername() + "<br>请点击该<a href='" + url + "'>链接</a>进行找回密码操作，链接在30分钟内有效";
                             EmailUtils.sendHtmlEmail("密码找回邮件", htmlMsg, value);
                             //发完邮件把sessionID作为键传入缓存值不重要，只要通过sessionID获取到值就行
