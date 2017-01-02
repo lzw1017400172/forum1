@@ -63,7 +63,7 @@
             last:'末页',
             prev:'上一页',
             next:'下一页',
-            href: '?p={{number}}'        //超链接跳转,只用显示所有节点，不用其他参数
+            href: '?p={{number}}&_=2'        //超链接跳转,只用显示所有节点，不用其他参数
         });
 
         $(".delete").click(function () {

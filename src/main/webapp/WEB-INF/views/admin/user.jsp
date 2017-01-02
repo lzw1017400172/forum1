@@ -62,7 +62,7 @@
             last:"末页",
             prev:'上一页',
             next:'下一页',
-            href:"/admin/user?p={{number}}"
+            href:"/admin/user?p={{number}}&_=3"
 
         });
 

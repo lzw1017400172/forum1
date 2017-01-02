@@ -41,7 +41,7 @@
                 </c:forEach>
         </tbody>
     </table>
-    <div class="pagination  pagination-centered"> /<%--/centered居中，right右边，left左边--%>
+    <div class="pagination  pagination-centered"> <%--/centered居中，right右边，left左边--%>
         <ul id="pagination" style="margin-bottom:20px;"></ul>
     </div>
 </div>
@@ -58,7 +58,7 @@
             last:'末页',
             prev:'上一页',
             next:'下一页',
-            href: 'admin/home?p={{number}}'
+            href: 'admin/home?p={{number}}&_=0'
 
         });
 

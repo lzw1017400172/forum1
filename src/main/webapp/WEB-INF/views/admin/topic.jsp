@@ -53,7 +53,7 @@
                 <td>${topic.replynum}</td>
                 <td>${topic.lastreplytime}</td>
                 <td>
-                    <select name="nodeid" id ="nodeid">
+                    <select name="nodeid" id ="${topic.id}">
                         <%--每次都要把全部节点作为下拉框，跳进页面就选中的由topic的nodeid决定--%>
                         <c:forEach items="${nodeList}" var="node">
                             <option ${topic.nodeid == node.id?'selected':''} value="${node.id}">${node.nodename}</option>
@@ -61,7 +61,7 @@
                     </select>
                 </td>
                 <td>
-                    <a href="javascript:;" rel="${topic.id}" class="update">修改</a>
+                    <a href="javascript:;" rel="${topic.id}" class="update" >修改</a>
                     <a href="javascript:;" rel="${topic.id}" class="delete">删除</a><%--删除操作，需要知道点击那个删除哪个，需要知道topicid.--%>
                 </td><%--如果不用异步请求，直接用超链接删除成功跳转回来。用异步，刷新本页就行--%>
             </tr>
@@ -88,11 +88,11 @@
             last:'末页',
             prev:'上一页',
             next:'下一页',
-            href: '/admin/topic?p={{number}}' //这里孩子需要页数，不需要其他值
+            href: '/admin/topic?p={{number}}&_=1' //这里孩子需要页数，不需要其他值
         });
         $(".update").click(function () {
             var topicid = $(this).attr("rel");
-            var nodeid = $("#nodeid").val();
+            var nodeid = $("#"+topicid).val();
             swal({
                 title: "确定要修改该主题节点?",
                 type: "warning",
