@@ -25,7 +25,27 @@ public class Test {
 
 
 
+        String str = "11,22,33,44,52,34,21";
+        String[] strs = str.split(",");
+        int[] nums = new int[strs.length];
+        for(int i = 0;i < strs.length - 1;i++){
+            nums[i] = Integer.parseInt(strs[i]);
+        }
 
+        for(int i = 0;i < nums.length;i++){
+            for(int j = 0;j < nums.length - i -1;j++){
+                if(nums[j] < nums[j+1]) {
+                    int a = nums[j];
+                    nums[j] = nums[j+1];
+                    nums[j+1] = a;
+                }
+
+            }
+
+        }
+        for(int i = 0;i < nums.length;i++){
+            System.out.println(nums[i]);
+        }
 
 
        /*for(int j = 2;j<10;j++){//循环页数
