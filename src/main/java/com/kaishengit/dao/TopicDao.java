@@ -119,7 +119,7 @@ public class TopicDao {
      * 查询topic发布的天数
      */
     public int countTopicByDay() {//每一个派生出来的表或者列都要有别名。先分组查出日期表。(派生表as别名)。在查派生的表的count(*)
-        String sql = "select count(*) from (select count(*) from t_topic group by date_format(createtime,'%y-%m-%d'))as topicCount";
+        String sql = "select count(*) from (select count(*) from t_topic group by date_format(createtime,'%y-%m-%d')) as topicCount";
         return DbHelp.query(sql,new ScalarHandler<Long>()).intValue();
     }
 

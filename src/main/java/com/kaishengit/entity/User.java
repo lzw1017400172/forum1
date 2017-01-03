@@ -26,6 +26,15 @@ public class User implements Serializable{
     private Integer status;
     private Timestamp createtime; //创建账户的时间
     private String avatar;   //头像，记录的是上传到犀牛的图片七牛返回来的key(文件名七牛内部)值，经过base64加密
+    private String lastip;
+
+    public String getLastip() {
+        return lastip;
+    }
+
+    public void setLastip(String lastip) {
+        this.lastip = lastip;
+    }
 
     private LoginLog loginLog;
 

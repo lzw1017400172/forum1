@@ -58,7 +58,7 @@
             last:'末页',
             prev:'上一页',
             next:'下一页',
-            href: 'admin/home?p={{number}}&_=0'
+            href:'?p={{number}}&_=0'
 
         });
 

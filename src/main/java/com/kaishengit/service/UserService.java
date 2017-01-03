@@ -159,6 +159,10 @@ public class UserService {
                     LoginLogDao loginLogDao = new LoginLogDao();
                     loginLogDao.LoginLogSave(loginLog);
                     logger.info("{}登录了系统，IP：{}",username,ip);
+                    //只要登录一次就更新一次最后登录ip
+                    user.setLastip(ip);
+                    userDao.UserUpdate(user);
+
                     return user;
                 } else if(user.getStatus().equals(User.DEFAULT_STATUS)){
                     throw new ServiceException("此帐号未激活");

@@ -22,7 +22,7 @@ public class UserVo {
     private Timestamp createtime;
     private Timestamp logintime;
     private Integer status;
-    private String ip;
+    private String lastip;
 
     public String getUsername() {
         return username;
@@ -56,11 +56,11 @@ public class UserVo {
         this.status = status;
     }
 
-    public String getIp() {
-        return ip;
+    public String getLastip() {
+        return lastip;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setLastip(String lastip) {
+        this.lastip = lastip;
     }
 }

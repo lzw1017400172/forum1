@@ -36,7 +36,7 @@
                 <td>${userVo.username}</td>
                 <td>${userVo.createtime}</td>
                 <td>${userVo.logintime}</td>
-                <td>${userVo.ip}</td>
+                <td>${userVo.lastip}</td>
                 <td>
                     <a href="javascript:;" rel="${userVo.id}" class="state">${userVo.status == 1 ?"禁用":"恢复"}</a><%--这里只显示禁用和正常，未激活不会显示在这里。在sql里查的时候过滤掉--%>
                 </td><%--可以直接超链接，跳转改变状态之后，再请求转发回来。用ajax更可观，可以弹窗成功后才刷新本页--%>
