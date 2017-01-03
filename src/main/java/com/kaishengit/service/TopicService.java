@@ -347,16 +347,17 @@ public class TopicService {
     }
 
     /**
-     * 分页查询每天的发帖数，回复数
+     * 分页查询每天的发帖数，回复数。需要reply表和topic表  先左联接，再右联接。再union关键字上下连接在一起，并且会自动去重复。最后按照时间排序就好。
      * @param pageNo
      */
     public Page findTopicNumAndReplyNum(int pageNo) {
-        //按照天数分页，但是不确定按照哪个天数分页。回复的天数和发帖的天数哪个多肯定是按照哪个分页。所以比较两个
-        int totals = topicDao.countTopicByDay();// > topicDao.countReplyByDay() ? topicDao.countTopicByDay() : topicDao.countReplyByDay();
+
+        int totals = topicDao.countDerive();//就是查询结果的行数。即：先左联接，再右联接。再union关键字上下连接在一起，并且会自动去重复。最后按照时间排序就好。派生的表的行数。select cont(*)即可。派生表重命名
+
         Page page = new Page(totals,pageNo);
+        page.setItems(topicDao.findTopicNumAndReplyNum(page));
 
         //按照日期查topic派生一个表，按照日期查reply派生一个表，两表全连接（连接后表的行数与最多的一致），并且分页按照天数多的就有多少数据分页
-         page.setItems(topicDao.findTopicNumAndReplyNum(page));
         return page;
     }
 }

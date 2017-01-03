@@ -116,30 +116,36 @@ public class TopicDao {
     }
 
     /**
-     * 查询topic发布的天数
+     * 查询所存在日期的行数，包括topic创建和reply创建两个表去重复加在一起的个数。也就是把下面用union连接的表count(*)查总行数，记住派生的表要重命名。as。有些派生的列名也可以as重命名，这样自动封装就是按照重命名后的列名，封装，所以实体类属性也要和重命名后的一致。
      */
-    public int countTopicByDay() {//每一个派生出来的表或者列都要有别名。先分组查出日期表。(派生表as别名)。在查派生的表的count(*)
-        String sql = "select count(*) from (select count(*) from t_topic group by date_format(createtime,'%y-%m-%d')) as topicCount";
+    public int countDerive() {
+        String sql = "select count(*) from\n" +
+                "(select topictime,topicnum,replynum from (select date_format(createtime,'%y-%m-%d') as topictime,count(*) as topicnum from t_topic group by topictime \n" +
+                ") as tn left join (select date_format(createtime,'%y-%m-%d') as replytime,count(*) as replynum from t_reply group by replytime \n" +
+                ") as tr on tn.topictime = tr.replytime  \n" +
+                "union\n" +
+                "select replytime,topicnum,replynum from (select date_format(createtime,'%y-%m-%d') as topictime,count(*) as topicnum from t_topic group by topictime \n" +
+                ") as tn right join (select date_format(createtime,'%y-%m-%d') as replytime,count(*) as replynum from t_reply group by replytime \n" +
+                ") as tr on tn.topictime = tr.replytime ) as derive\n";
         return DbHelp.query(sql,new ScalarHandler<Long>()).intValue();
     }
 
     /**
-     * 查询有回复的天数
-     * @return
-     */
-    public int countReplyByDay(){
-        String sql = "select count(*) from (select count(*) from t_reply group by date_format(createtime,'%y-%m-%d'))as replyCount";
-        return DbHelp.query(sql,new ScalarHandler<Long>()).intValue();
-    }
-    /**
-     * 分页查询，按照日期查topic派生一个表，按照日期查reply派生一个表，两表全连接。就不会漏掉内容。比如发帖天数少于回复天数。并且分页的totals是进行比较最大的
+     * 分页查询，topic表和reply表  先左连接，再右联接，之后在union上下连接，并且自动去重复。这样不会漏掉，某个日期有回复没发帖就漏数据的情况。
+     *
      * @param page
      */
     public List<HomeShowVo> findTopicNumAndReplyNum(Page page) {
-        String sql = "select * from (select date_format(createtime,'%y-%m-%d') as topictime,count(*) as topicnum from t_topic group by topictime \n" +
-                ") as tn , (select date_format(createtime,'%y-%m-%d') as replytime,count(*) as replynum from t_reply group by replytime \n" +
-                ") as tr where tn.topictime = tr.replytime order by topictime desc limit ?,?";
+        String sql = "select topictime,topicnum,replynum from (select date_format(createtime,'%y-%m-%d') as topictime,count(*) as topicnum from t_topic group by topictime \n" +
+                ") as tn left join (select date_format(createtime,'%y-%m-%d') as replytime,count(*) as replynum from t_reply group by replytime \n" +
+                ") as tr on tn.topictime = tr.replytime  \n" +
+                "union\n" +
+                "select replytime,topicnum,replynum from (select date_format(createtime,'%y-%m-%d') as topictime,count(*) as topicnum from t_topic group by topictime \n" +
+                ") as tn right join (select date_format(createtime,'%y-%m-%d') as replytime,count(*) as replynum from t_reply group by replytime \n" +
+                ") as tr on tn.topictime = tr.replytime  order by topictime desc limit ?,?";
         return DbHelp.query(sql,new BeanListHandler<HomeShowVo>(HomeShowVo.class),page.getStart(),page.getPageSize());
 
     }
+
+
 }

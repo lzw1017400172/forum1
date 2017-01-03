@@ -24,8 +24,8 @@ public class UserDao {
      * 修改登录记录数据库
      */
     public void UserUpdate(User user){
-        String sql = "update t_user set username = ?,password = ?, email = ?,phone = ?,status = ?,createtime = ?,avatar = ? where id = ?";
-        DbHelp.update(sql,user.getUsername(),user.getPassword(),user.getEmail(),user.getPhone(),user.getStatus(),user.getCreatetime(),user.getAvatar(),user.getId());
+        String sql = "update t_user set username = ?,password = ?, email = ?,phone = ?,status = ?,createtime = ?,avatar = ?,lastip = ? where id = ?";
+        DbHelp.update(sql,user.getUsername(),user.getPassword(),user.getEmail(),user.getPhone(),user.getStatus(),user.getCreatetime(),user.getAvatar(),user.getLastip(),user.getId());
     }
 
     /**
